@@ -30,6 +30,13 @@ const express = require("express");
 
 const endpoints = [
   {
+    method: "get",
+    path: "/",
+    handler: (req, res) => {
+      res.send("cowtube-api\nTry posting to ./cowtubeapi with json parameter {\"q\":\"${search query}\"}");
+    },
+  },
+  {
     method: "post",
     path: "/cowtubeapi",
     handler: (req, res) => {
