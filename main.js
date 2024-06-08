@@ -43,7 +43,38 @@ const endpoints = [
       ytapi(req, res);
     },
   },
+  {
+    method: "get",
+    path: "/rollcow",
+    handler: (req, res) => {
+      rollcow(req, res);
+    },
+  },
 ];
+
+function getTotalWeight(){
+  const data = require('./rolls.json')
+  let total = 0
+  for(let indexofdata = 0; indexofdata < data.length; indexofdata++){
+    total += data[indexofdata].weight
+  }
+  return total
+}
+
+function rollcow(req, res){
+  let totalweight = getTotalWeight()
+  let roll = Math.floor(Math.random() * totalweight)
+  let data = require('./rolls.json')
+  let cow = data[0]
+  for(let indexofdata = 0; indexofdata < data.length;indexofdata++){
+    if(roll < data[indexofdata].weight){
+      cow = data[indexofdata]
+      break
+    }
+    roll -= data[indexofdata].weight
+  }
+  res.send(cow.name)
+}
 
 function ytapi(req, res) {
   let q = req.body.q;
