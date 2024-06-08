@@ -47,7 +47,11 @@ const endpoints = [
     method: "get",
     path: "/rollcow",
     handler: (req, res) => {
-      rollcow(req, res);
+      let rolls = []
+      for(let i = 0; i < 10; i++){
+        rolls.push(rollcow())
+      }
+      res.send(rolls)
     },
   },
 ];
@@ -61,7 +65,7 @@ function getTotalWeight(){
   return total
 }
 
-function rollcow(req, res){
+function rollcow(){
   let totalweight = getTotalWeight()
   let roll = Math.floor(Math.random() * totalweight)
   let data = require('./rolls.json')
@@ -73,7 +77,7 @@ function rollcow(req, res){
     }
     roll -= data[indexofdata].weight
   }
-  res.send(cow.name)
+  return cow.name
 }
 
 function ytapi(req, res) {
