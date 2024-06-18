@@ -54,6 +54,13 @@ const endpoints = [
       res.send(rolls)
     },
   },
+  {
+    method: "get",
+    path: "/cowcur.png",
+    handler: (req, res) => {
+      res.sendFile(__dirname + "/cowcur.png");
+    },
+  },
 ];
 
 function getTotalWeight(){
