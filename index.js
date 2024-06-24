@@ -69,7 +69,7 @@ io.on("connection", (socket) => {
     console.log(connections[conid])
     console.log(socketid)
 
-
+    if(!conid){console.log("no id");return}
     if(connections[conid].includes(socketid)){
        connections[id].splice(connections[id].indexOf(socketid),1)
       console.log(`connections: ${JSON.stringify(connections)}`)
@@ -131,8 +131,9 @@ io.on("connection", (socket) => {
       io.to(connections[id][i]).emit("number", { total: total,self:self,id:id });
     }
     io.emit("total", { total: total});
+    conid = id
+
   });
-  conid = id
 });
 
 
