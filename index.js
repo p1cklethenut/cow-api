@@ -61,7 +61,7 @@ io.on("connection", (socket) => {
 
   // Listen for 'edit' events from the client
   socket.on("id", (data) => {
-    console.log("ided");
+    //console.log("ided");
     let id = data;
     let json = require("./data.json");
     if (!id||json.users[id]===undefined) {
@@ -81,7 +81,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("clicked", (data) => {
-    console.log("clicked");
+    //console.log("clicked");
     let id = data;
 
     let json = require("./data.json");
