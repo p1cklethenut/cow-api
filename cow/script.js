@@ -30,6 +30,11 @@ socket.on("connect", (data) => {
   
 })
 
+socket.on("total",(data)=>{
+
+  number.innerHTML = "Total Cows: "+data.total;
+})
+
 socket.on("number", (data) => {
   console.log(data)
   number.innerHTML = "Total Cows: "+data.total;
