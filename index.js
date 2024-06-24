@@ -79,7 +79,7 @@ io.on("connection", (socket) => {
     }
     let total = json.clicks;
     let self = json.users[id];
-    io.emit("number", { total: total, self: self, id: id });
+    io.to(socketid).emit("number", { total: total, self: self, id: id });
   });
 
   socket.on("clicked", (data) => {
