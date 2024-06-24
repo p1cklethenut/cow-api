@@ -17,6 +17,11 @@ app.get("/style.css", (req, res) => {
   res.sendFile(__dirname + "/style.css");
 });
 
+app.get('/cowcur.png',(req,res) =>{
+  
+  res.sendFile(__dirname+"/cowcur.png")
+})
+
 app.get('/cronjob',(req,res) =>{
   saveData()
   res.send("croned")
