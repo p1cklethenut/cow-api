@@ -170,7 +170,7 @@ if(true){
   .then((data) => {
     fs.writeFileSync(__dirname+"/data.json",data)
     console.log("got data")
-    http.listen(3000, () => {
+    http.listen( process.env.PORT || 3001, () => {
       console.log("Server listening on port 3000");
     });
   })
