@@ -61,10 +61,11 @@ let connections = {}
 io.on("connection", (socket) => {
   let socketid = socket.id;
   // Send initial content to the client when connected
+  let id
   socket.on("disconnect", (reason) => {
     // ...
     //console.log(reason)
-    if(connections[id].includes(socketid)){
+    if(connections[conid].includes(socketid)){
        connections[id].splice(connections[id].indexOf(socketid),1)
       console.log(`connections: ${JSON.stringify(connections)}`)
     }
@@ -72,7 +73,7 @@ io.on("connection", (socket) => {
   // Listen for 'edit' events from the client
   socket.on("id", (data) => {
     //console.log("ided:"+data);
-    let id = data;
+    let conid = data;
     let json = require("./data.json");
     if (!id||json.users[id]===undefined) {
       let isdupe = true;
@@ -85,6 +86,7 @@ io.on("connection", (socket) => {
       json.users[id] = 0;
       fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
       //console.log("created: "+id)
+      
     }
     let total = json.clicks;
     let self = json.users[id];
@@ -96,7 +98,7 @@ io.on("connection", (socket) => {
     }else{
       connections[id] = [socketid]
     }
-
+    conid = id
     console.log(`connections: ${JSON.stringify(connections)}`)
   });
 
@@ -126,6 +128,7 @@ io.on("connection", (socket) => {
     }
     io.emit("total", { total: total});
   });
+  conid = id
 });
 
 
