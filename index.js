@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
 
     if(!conid){console.log("no id");return}
     if(connections[conid].includes(socketid)){
-       connections[id].splice(connections[id].indexOf(socketid),1)
+       connections[conid].splice(connections[conid].indexOf(socketid),1)
       console.log(`connections: ${JSON.stringify(connections)}`)
     }
   });
