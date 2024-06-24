@@ -61,7 +61,7 @@ io.on("connection", (socket) => {
 
   // Listen for 'edit' events from the client
   socket.on("id", (data) => {
-    //console.log("ided");
+    console.log("ided:"+data);
     let id = data;
     let json = require("./data.json");
     if (!id||json.users[id]===undefined) {
@@ -74,6 +74,7 @@ io.on("connection", (socket) => {
       }
       json.users[id] = 0;
       fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
+      console.log("created: "+id)
     }
     let total = json.clicks;
     let self = json.users[id];
@@ -81,7 +82,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("clicked", (data) => {
-    //console.log("clicked");
+    console.log("clicked: "+data);
     let id = data;
 
     let json = require("./data.json");
