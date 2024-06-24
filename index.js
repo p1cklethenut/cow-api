@@ -6,15 +6,15 @@ const io = require("socket.io")(http);
 const url = "https://script.google.com/macros/s/AKfycbwEt02re6ab7g043yEfNUgysvDacJtcPOAoNa1-v1EVbrVyC0fiohjy3CrqoaR40UqNdg/exec"
 // Serve static files (replace with your actual path)
 app.get("/", (req, res) => {
-  res.sendFile("/index.html", { root: __dirname });
+  res.sendFile("/cow/index.html", { root: __dirname });
 });
 
 app.get("/script.js", (req, res) => {
-  res.sendFile(__dirname + "/script.js");
+  res.sendFile(__dirname + "/cow/script.js");
 });
 
 app.get("/style.css", (req, res) => {
-  res.sendFile(__dirname + "/style.css");
+  res.sendFile(__dirname + "/cow/style.css");
 });
 
 app.get('/cowcur.png',(req,res) =>{
