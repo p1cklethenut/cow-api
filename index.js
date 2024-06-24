@@ -17,6 +17,20 @@ app.get("/style.css", (req, res) => {
   res.sendFile(__dirname + "/cow/style.css");
 });
 
+
+app.post("/cowtubeapi",(req,res) =>{
+  ytapi(req, res);
+})
+
+
+app.get("/rollcow",(req,res) =>{
+    let rolls = []
+    for(let i = 0; i < 10; i++){
+      rolls.push(rollcow())
+    }
+    res.send(rolls)
+})
+
 app.get('/cowcur.png',(req,res) =>{
   
   res.sendFile(__dirname+"/cowcur.png")
