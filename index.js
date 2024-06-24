@@ -56,10 +56,19 @@ function saveData(){
   });
 }
 
+let connections = {}
+
 io.on("connection", (socket) => {
   let socketid = socket.id;
   // Send initial content to the client when connected
-
+  socket.on("disconnect", (reason) => {
+    // ...
+    //console.log(reason)
+    if(connections[id].includes(socketid)){
+       connections[id].splice(connections[id].indexOf(socketid),1)
+      console.log(`connections: ${JSON.stringify(connections)}`)
+    }
+  });
   // Listen for 'edit' events from the client
   socket.on("id", (data) => {
     //console.log("ided:"+data);
@@ -80,6 +89,15 @@ io.on("connection", (socket) => {
     let total = json.clicks;
     let self = json.users[id];
     io.to(socketid).emit("number", { total: total, self: self, id: id });
+    if(connections[id]){
+      if(!connections[id].includes(socketid)){
+        connections[id].push(socketid)
+      }
+    }else{
+      connections[id] = [socketid]
+    }
+
+    console.log(`connections: ${JSON.stringify(connections)}`)
   });
 
   socket.on("clicked", (data) => {
@@ -103,7 +121,9 @@ io.on("connection", (socket) => {
 
     let total = json.clicks;
     let self = json.users[id];
-    io.to(socketid).emit("number", { total: total,self:self,id:id });
+    for(let i = 0; i<connections[id].length;i++){
+      io.to(connections[id][i]).emit("number", { total: total,self:self,id:id });
+    }
     io.emit("total", { total: total});
   });
 });
