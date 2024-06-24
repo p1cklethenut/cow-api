@@ -13,9 +13,6 @@ app.get("/script.js", (req, res) => {
   res.sendFile(__dirname + "/cow/script.js");
 });
 
-app.get("/style.css", (req, res) => {
-  res.sendFile(__dirname + "/cow/style.css");
-});
 
 
 app.post("/cowtubeapi",(req,res) =>{
