@@ -3,7 +3,7 @@ const fs = require("fs");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-const url = "https://script.google.com/macros/s/AKfycbwEt02re6ab7g043yEfNUgysvDacJtcPOAoNa1-v1EVbrVyC0fiohjy3CrqoaR40UqNdg/exec"
+const url = process.env["db"]
 app.get("/", (req, res) => {
   res.sendFile("/cow/index.html", { root: __dirname });
 });
