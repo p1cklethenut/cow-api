@@ -72,7 +72,20 @@ io.on("connection", (socket) => {
     if(!conid){console.log("no id");return}
     if(connections[conid].includes(socketid)){
        connections[conid].splice(connections[conid].indexOf(socketid),1)
-      console.log(`connections: ${JSON.stringify(connections)}`)
+      //console.log(`connections: ${JSON.stringify(connections)}`)
+      console.log(`client ${conid} disconnected`)
+
+      if(connections[conid].length==0){
+        delete connections[conid]
+      }
+      let totalclients = 0;
+      for(const id in connections){
+        totalclients += connections[id].length
+        if(connections[id].length == 0){
+          delete connections[id]
+        }
+      }
+      console.log(`clients connected: ${totalclients}`)
     }
   });
   socket.on("id", (data) => {
