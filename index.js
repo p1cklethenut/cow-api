@@ -89,6 +89,60 @@ io.on("connection", (socket) => {
   });
 });
 
+
+function getTotalWeight(){
+  const data = require('./rolls.json')
+  let total = 0
+  for(let indexofdata = 0; indexofdata < data.length; indexofdata++){
+    total += data[indexofdata].weight
+  }
+  return total
+}
+
+function rollcow(){
+  let totalweight = getTotalWeight()
+  let roll = Math.floor(Math.random() * totalweight)
+  let data = require('./rolls.json')
+  let cow = data[0]
+  for(let indexofdata = 0; indexofdata < data.length;indexofdata++){
+    if(roll < data[indexofdata].weight){
+      cow = data[indexofdata]
+      break
+    }
+    roll -= data[indexofdata].weight
+  }
+  return cow.name
+}
+
+function ytapi(req, res) {
+  let q = req.body.q;
+  if (!q) {
+    q = "cow";
+  }
+  //variable for your API_KEY
+  const YOUTUBE_API_KEY = process.env.ytapi;
+  //url from YouTube docs modified for my random term and API key,
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=100&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}`;
+  //fetch function following the aforementioned process
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      let i = 0;
+      let item = data.items[Math.floor(Math.random() * data.items.length)];
+      while (
+        item.snippet.title.includes("#shorts") ||
+        item.snippet.description.includes("#shorts")
+      ) {
+        item = data.items[Math.floor(Math.random() * data.items.length)];
+        i++;
+        if (i > 100) {
+          break;
+        }
+      }
+      res.send(JSON.stringify({ id: item.id.videoId, data: item }));
+    });
+}
+
 if(true){
   
   fetch(url
@@ -105,4 +159,5 @@ if(true){
     console.error("Error fetching data:", error);
   });
 }
+
 
