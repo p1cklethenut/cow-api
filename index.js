@@ -4,7 +4,6 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const url = "https://script.google.com/macros/s/AKfycbwEt02re6ab7g043yEfNUgysvDacJtcPOAoNa1-v1EVbrVyC0fiohjy3CrqoaR40UqNdg/exec"
-// Serve static files (replace with your actual path)
 app.get("/", (req, res) => {
   res.sendFile("/cow/index.html", { root: __dirname });
 });
@@ -65,12 +64,17 @@ io.on("connection", (socket) => {
   socket.on("disconnect", (reason) => {
     // ...
     //console.log(reason)
+    console.log(conid)
+    console.log(connections)
+    console.log(connections[conid])
+    console.log(socketid)
+
+
     if(connections[conid].includes(socketid)){
        connections[id].splice(connections[id].indexOf(socketid),1)
       console.log(`connections: ${JSON.stringify(connections)}`)
     }
   });
-  // Listen for 'edit' events from the client
   socket.on("id", (data) => {
     //console.log("ided:"+data);
     let conid = data;
