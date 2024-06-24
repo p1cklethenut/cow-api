@@ -60,7 +60,7 @@ let connections = {}
 io.on("connection", (socket) => {
   let socketid = socket.id;
   // Send initial content to the client when connected
-  let id
+  let conid;
   socket.on("disconnect", (reason) => {
     // ...
     //console.log(reason)
@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
   });
   socket.on("id", (data) => {
     //console.log("ided:"+data);
-    let conid = data;
+    let id = data;
     let json = require("./data.json");
     if (!id||json.users[id]===undefined) {
       let isdupe = true;
