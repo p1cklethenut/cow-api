@@ -1,8 +1,14 @@
+
 class server {
   constructor() {
     const app = express();
     const cors = require("cors");
     const path = require("path");
+    
+    
+    const http = require("http").createServer(app);
+    const io = require("socket.io")(http);
+    const url = "https://script.google.com/macros/s/AKfycbwEt02re6ab7g043yEfNUgysvDacJtcPOAoNa1-v1EVbrVyC0fiohjy3CrqoaR40UqNdg/exec"
     app.use(express.json());
     app.use(cors());
     this.app = app;
