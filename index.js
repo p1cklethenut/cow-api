@@ -48,7 +48,7 @@ function saveData(){
   })
   .then((response) => {
     // Handle the API response here
-    console.log("saved")
+    //console.log("Server Data Backed up.")
   })
   .catch((error) => {
     console.error("Error fetching data:", error);
@@ -64,11 +64,12 @@ io.on("connection", (socket) => {
   socket.on("disconnect", (reason) => {
     // ...
     //console.log(reason)
+    /*
     console.log(conid)
     console.log(connections)
     console.log(connections[conid])
     console.log(socketid)
-
+    */
     if(!conid){console.log("no id");return}
     if(connections[conid].includes(socketid)){
        connections[conid].splice(connections[conid].indexOf(socketid),1)
