@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" >
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/x-icon" href="https://czheyuchatapp.onrender.com/icon.png">
+    <link rel="icon" type="image/x-icon" href="/cowcur.png">
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -44,44 +44,44 @@
         transition: width 0.4s ease; /* Duration: 3 seconds with an ease timing function */
       }
 
-      hr.gradient {
-        height: 3px;
-        border: none;
-        border-radius: 6px;
-        background: linear-gradient(
-          90deg,
-          rgba(13, 8, 96, 1) 0%,
-          rgba(9, 9, 121, 1) 21%,
-          rgba(6, 84, 170, 1) 51%,
-          rgba(0, 255, 113, 1) 100%
-        );
-      }
 
       .cowbtn img {
         width: 100%;
         max-width: 200px;
       }
+      .gradient-border-mask {
+        position: relative;
+        backdrop-filter: blur(10px);
+      }
+
+      .gradient-border-mask::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 30px;
+        border: 3px solid transparent;
+        background: -webkit-linear-gradient(
+                  right top,
+                  #b7b3f5,
+                  #b47aff) border-box;
+        mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+      }
     </style>
   </head>
-  <body class="d-flex flex-column h-100">
+  <body class="d-flex flex-column">
     <main class="flex-shrink-0">
       <!-- Navigation-->
       <nav class="navbar navbar-expand-lg navbar-light bg-white border py-3">
-        <div class="container px-5">
+        <div class="container px-2">
           <a class="navbar-brand" href="#"
             ><span
-              class="fw-bolder text-primary"
+              class="fw-bolder"
               style="
+              color:#b41aff;
                 font-size: 30px;
-                background: -webkit-linear-gradient(
-                  right top,
-                  #34eb95,
-                  #349eeb
-                );
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
               "
-              >Cow Tube</span
+              >CowTube</span
             ></a
           >
           <button
@@ -106,16 +106,34 @@
         </div>
       </nav>
       <!-- Header-->
-      <header class="py-5">
+      <header class="pt-3 pb-5">
         <div
-          class="container px-5 pb-5 bg-secondary rounded rounded-5 p-5 border border-2 "
-          style="--bs-bg-opacity: 0.02"
+          class="gradient-border-mask container p-5"
         >
             
-            <h1 id="num">Total Cows: </h1>
-                        <h2 id="selfnum">Your contribution: </h2>
+           <h1 id="num" class="fw-bold" style="
+                font-size: 50px;
+                background: -webkit-linear-gradient(
+                  right top,
+                  #b7b3f5,
+                  #b41aff
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+              ">Total Cows: 0</h1>
+          <h2 id="selfnum" class="" style="
+                font-size: 30px;
+                background: -webkit-linear-gradient(
+                  right top,
+                  #b7b3f5,
+                  #b47aff
+                                    
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+              ">Your contribution: 0</h2>
 
-          <div style="height:400px" class="row gx-5 align-items-center">              <!-- Header text content-->
+          <div style="height:250px" class="row gx-5 align-items-center">              <!-- Header text content-->
 
             <div class="text-center text-xxl-start">
               <div class="fs-3 fw-light text-muted">
@@ -133,10 +151,8 @@
           </div>
         </div>
       </header>
-
-      <!-- details Section-->
-      <hr class="gradient" />
-
+      <hr class="m">
+      <footer class="footer fw-light mx-3 my-2">cowtube v0.920</footer>
     </main>
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="script.js"></script>

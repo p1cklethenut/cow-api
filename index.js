@@ -3,46 +3,64 @@ const fs = require("fs");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-const url = process.env["db"]
-app.get("/", (req, res) => {
-  res.sendFile("/cow/index.html", { root: __dirname });
+const url = process.env["db"];
+let connections = {}; //to track and update clients
+
+app.get("/*", (req, res) => {
+  switch(req.url){
+    case("/"):
+      res.sendFile(__dirname + "/cow/index.html");
+      break;
+
+    case("/script.js"):
+      res.sendFile(__dirname + "/cow/script.js");
+      break;
+
+    case("/cow.png"):
+      res.sendFile(__dirname + `/cow/cow${Math.floor(Math.random() * 1)}.png`);
+      break;
+
+    case("/rollcow"):
+      let rolls = [];
+      for (let i = 0; i < 10; i++) {
+        rolls.push(rollcow());
+      }
+      res.send(rolls);
+      break;
+      
+    case("/cowcur.png"):
+      res.sendFile(__dirname + "/cowcur.png");
+      break;
+      
+    case("/cronjob"):
+      //keeping server alive + saving data to Db
+      saveData();
+      res.send("croned");
+      break;
+    case("/404/style.css"):
+      res.sendFile(__dirname + "/404page/style.css");
+    case("/404/bg.jpg"):
+      res.sendFile(__dirname + "/404page/cowbg.jpg");
+    default:
+      res.sendFile(__dirname + "/404page/index.html");
+  }  
+})
+
+app.post("/*", (req, res) => {
+  switch(req.url){
+    case("/cowtubeapi"):
+      ytapi(req, res);
+      break;
+    default:
+      res.send("404")
+  }
 });
 
-app.get("/script.js", (req, res) => {
-  res.sendFile(__dirname + "/cow/script.js");
-});
-
-app.get("/cow.png", (req, res) => {
-  res.sendFile(__dirname + `/cow/cow${Math.floor(Math.random()*1)}.png`);
-})
 
 
-app.post("/cowtubeapi",(req,res) =>{
-  ytapi(req, res);
-})
-
-
-app.get("/rollcow",(req,res) =>{
-    let rolls = []
-    for(let i = 0; i < 10; i++){
-      rolls.push(rollcow())
-    }
-    res.send(rolls)
-})
-
-app.get('/cowcur.png',(req,res) =>{
-  
-  res.sendFile(__dirname+"/cowcur.png")
-})
-
-app.get('/cronjob',(req,res) =>{
-  saveData()
-  res.send("croned")
-})
-
-
-function saveData(){
-  let data = JSON.parse(fs.readFileSync("./data.json"))
+//Function to POST clicks data to a url endpoint:
+function saveData() {
+  let data = JSON.parse(fs.readFileSync("./data.json"));
   fetch(url, {
     method: "POST",
     headers: {
@@ -50,136 +68,162 @@ function saveData(){
     },
     body: JSON.stringify(data),
   })
-  .then((response) => {
-    // Handle the API response here
-    //console.log("Server Data Backed up.")
-  })
-  .catch((error) => {
-    console.error("Error fetching data:", error);
-  });
+    .then((response) => {
+      // Handle the API response here
+      //console.log("Server Data Backed up.")
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
 }
 
-let connections = {}
+//setup socket.io server
+function socketSetup() {
+  io.on("connection", (socket) => {
+    let socket_client_id = socket.id;
+    // Send initial content to the client when connected
+    let connection_client_id;
+    socket.on("disconnect", (reason) => {
+      // ...
+      //console.log(reason)
+      /*
+      console.log(connection_client_id)
+      console.log(connections)
+      console.log(connections[connection_client_id])
+      console.log(socket_client_id)
+      */
+      if (!connection_client_id) {
+        console.log("no id");
+        return;
+      }
+      if (connections[connection_client_id].includes(socket_client_id)) {
+        connections[connection_client_id].splice(
+          connections[connection_client_id].indexOf(socket_client_id),
+          1,
+        );
+        //console.log(`connections: ${JSON.stringify(connections)}`)
+        console.log(`client ${connection_client_id} disconnected`);
 
-io.on("connection", (socket) => {
-  let socketid = socket.id;
-  // Send initial content to the client when connected
-  let conid;
-  socket.on("disconnect", (reason) => {
-    // ...
-    //console.log(reason)
-    /*
-    console.log(conid)
-    console.log(connections)
-    console.log(connections[conid])
-    console.log(socketid)
-    */
-    if(!conid){console.log("no id");return}
-    if(connections[conid].includes(socketid)){
-       connections[conid].splice(connections[conid].indexOf(socketid),1)
-      //console.log(`connections: ${JSON.stringify(connections)}`)
-      console.log(`client ${conid} disconnected`)
+        if (connections[connection_client_id].length == 0) {
+          delete connections[connection_client_id];
+        }
+        let totalclients = 0;
+        for (const id in connections) {
+          totalclients += connections[id].length;
+          if (connections[id].length == 0) {
+            delete connections[id];
+          }
+        }
+        console.log(`clients connected: ${totalclients}`);
+      }
+    });
 
-      if(connections[conid].length==0){
-        delete connections[conid]
-      }
-      let totalclients = 0;
-      for(const id in connections){
-        totalclients += connections[id].length
-        if(connections[id].length == 0){
-          delete connections[id]
+    socket.on("id", (data) => {
+      //console.log("ided:"+data);
+      let id = data;
+      let json = require("./data.json");
+      if (!id || json.users[id] === undefined) {
+        let isdupe = true;
+        while (isdupe) {
+          id = Math.floor(10000000 + Math.random() * 90000000).toString();
+          if (!Object.keys(json.users).includes(id)) {
+            isdupe = false;
+          }
         }
+        json.users[id] = 0;
+        fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
+        //console.log("created: "+id)
       }
-      console.log(`clients connected: ${totalclients}`)
-    }
-  });
-  socket.on("id", (data) => {
-    //console.log("ided:"+data);
-    let id = data;
-    let json = require("./data.json");
-    if (!id||json.users[id]===undefined) {
-      let isdupe = true;
-      while (isdupe) {
-        id = Math.floor(10000000 + Math.random() * 90000000).toString();
-        if (!Object.keys(json.users).includes(id)) {
-          isdupe = false;
+      let total = json.clicks;
+      let self = json.users[id];
+      io.to(socket_client_id).emit("number", {
+        total: total,
+        self: self,
+        id: id,
+      });
+      if (connections[id]) {
+        if (!connections[id].includes(socket_client_id)) {
+          connections[id].push(socket_client_id);
         }
+      } else {
+        connections[id] = [socket_client_id];
       }
-      json.users[id] = 0;
+      connection_client_id = id;
+      console.log(`connections: ${JSON.stringify(connections)}`);
+    });
+
+    socket.on("clicked", (data) => {
+      //console.log("clicked: "+JSON.stringify(data));
+      let id = data.id;
+      let clicks = data.clicks;
+
+      let json = require("./data.json");
+      if (!Object.keys(json.users).includes(id)) {
+        let isdupe = true;
+        while (isdupe) {
+          id = Math.floor(10000000 + Math.random() * 90000000).toString();
+          if (!Object.keys(json.users).includes(id)) {
+            isdupe = false;
+          }
+        }
+        json.users[id] = 0;
+      }
+      json.clicks += clicks;
+      json.users[id] += clicks;
       fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
-      //console.log("created: "+id)
-      
-    }
-    let total = json.clicks;
-    let self = json.users[id];
-    io.to(socketid).emit("number", { total: total, self: self, id: id });
-    if(connections[id]){
-      if(!connections[id].includes(socketid)){
-        connections[id].push(socketid)
+
+      let total = json.clicks;
+      let self = json.users[id];
+      for (let i = 0; i < connections[id].length; i++) {
+        io.to(connections[id][i]).emit("number", {
+          total: total,
+          self: self,
+          id: id,
+        });
       }
-    }else{
-      connections[id] = [socketid]
-    }
-    conid = id
-    console.log(`connections: ${JSON.stringify(connections)}`)
+      connection_client_id = id;
+    });
   });
-
-  socket.on("clicked", (data) => {
-    //console.log("clicked: "+JSON.stringify(data));
-    let id = data.id;
-    let clicks = data.clicks;
-
-    let json = require("./data.json");
-    if (!Object.keys(json.users).includes(id)) {
-      let isdupe = true;
-      while (isdupe) {
-        id = Math.floor(10000000 + Math.random() * 90000000).toString();
-        if (!Object.keys(json.users).includes(id)) {
-          isdupe = false;
-        }
-      }
-      json.users[id] = 0;
-    }
-    json.clicks += clicks;
-    json.users[id] += clicks;
-    fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
-
-    let total = json.clicks;
-    let self = json.users[id];
-    for(let i = 0; i<connections[id].length;i++){
-      io.to(connections[id][i]).emit("number", { total: total,self:self,id:id });
-    }
-    io.emit("total", { total: total});
-    conid = id
-
-  });
-});
-
-
-function getTotalWeight(){
-  const data = require('./rolls.json')
-  let total = 0
-  for(let indexofdata = 0; indexofdata < data.length; indexofdata++){
-    total += data[indexofdata].weight
-  }
-  return total
 }
 
-function rollcow(){
-  let totalweight = getTotalWeight()
-  let roll = Math.floor(Math.random() * totalweight)
-  let data = require('./rolls.json')
-  let cow = data[0]
-  for(let indexofdata = 0; indexofdata < data.length;indexofdata++){
-    if(roll < data[indexofdata].weight){
-      cow = data[indexofdata]
-      break
-    }
-    roll -= data[indexofdata].weight
+//Function to update Total cow count globally (setInterval(this))
+function updateTotalGlobal() {
+  if (Object.keys(connections).length == 0) {
+    return;
   }
-  return cow.name
+
+  const json = require("./data.json");
+  const totalclicks = json.clicks;
+  io.emit("total", { total: totalclicks });
 }
 
+//Function to roll a cow drop. Deps: getTotalWeight(), ./rolls.json:
+function rollcow() {
+  //Function to get weight to randomize cow drops:
+  function getTotalWeight() {
+    const data = require("./rolls.json");
+    let total = 0;
+    for (let indexofdata = 0; indexofdata < data.length; indexofdata++) {
+      total += data[indexofdata].weight;
+    }
+    return total;
+  }
+
+  let totalweight = getTotalWeight();
+  let roll = Math.floor(Math.random() * totalweight);
+  let data = require("./rolls.json");
+  let cow = data[0];
+  for (let indexofdata = 0; indexofdata < data.length; indexofdata++) {
+    if (roll < data[indexofdata].weight) {
+      cow = data[indexofdata];
+      break;
+    }
+    roll -= data[indexofdata].weight;
+  }
+  return cow.name;
+}
+
+//Function to randomize a youtube video based on a search query, uses "cow" if input is undefined:
 function ytapi(req, res) {
   let q = req.body.q;
   if (!q) {
@@ -209,21 +253,23 @@ function ytapi(req, res) {
     });
 }
 
-if(true){
-  
-  fetch(url
-  )
-  .then((response) => response.json())
-  .then((data) => {
-    fs.writeFileSync(__dirname+"/data.json",data)
-    console.log("got data")
-    http.listen( process.env.PORT || 3001, () => {
-      console.log("Server listening on port " + process.env.PORT);
+//---------------------------------------------------------------------------------//
+//main entrypoint:
+function main() {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      fs.writeFileSync(__dirname + "/data.json", data);
+      console.log("got data");
+      http.listen(process.env.PORT || 3001, () => {
+        console.log("Server listening on port " + process.env.PORT || 3001);
+        setInterval(updateTotalGlobal, 1000); // updating total cow count every second
+        socketSetup();
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
     });
-  })
-  .catch((error) => {
-    console.error("Error fetching data:", error);
-  });
 }
 
-
+main();
