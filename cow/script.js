@@ -2,6 +2,7 @@ const socket = io();
 const number = document.getElementById("num");
 const self = document.getElementById("selfnum");
 let clickbuffer=0;
+let clicksendbuffer = 0;
 console.log(1)
 let selfid;
 let timelastclicked = 0;
@@ -45,9 +46,7 @@ async function clicked(){
 
 
   clickbuffer += 1
-
-  number.innerHTML = "Total Cows: "+(totalcows + clickbuffer);
-  self.innerHTML = "Your contribution: "+(selfcows + clickbuffer);
+  updatedisplay()
   
   const cowbtn = document.getElementById("cowbtn")
   //console.log((width *0.8).toFixed(0)+"px")
@@ -61,6 +60,13 @@ async function clicked(){
     await sleep(secs/num)
   }
   cowbtn.style.width= width+"px"
+}
+
+function updatedisplay(){
+
+  number.innerHTML = "Total Cows: "+(totalcows + clickbuffer+clicksendbuffer);
+
+  self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer);
 }
 
 function generatecowimgid(){
@@ -105,16 +111,18 @@ socket.on("connect", (data) => {
 
 socket.on("total",(data)=>{
 
-  number.innerHTML = "Total Cows: "+(data.total + clickbuffer);
+
   totalcows = data.total
+  updatedisplay()
 })
 
 socket.on("number", (data) => {
+  
   console.log(data)
-  number.innerHTML = "Total Cows: "+(data.total + clickbuffer);
-  self.innerHTML = "Your contribution: "+(data.self + clickbuffer);
+  clicksendbuffer = 0
   totalcows = data.total
   selfcows = data.self
+  updatedisplay()
   localStorage.setItem('id',data.id)
   if(selfid != data.id){
     selfid = data.id
@@ -126,7 +134,9 @@ socket.on("number", (data) => {
 async function update(){
   if(clickbuffer>0){
     socket.emit("clicked",{id:getId(),clicks:clickbuffer})
-    clickbuffer = 0
+    clicksendbuffer = clickbuffer;
+    clickbuffer = 0;
+
   }
   await sleep(1000)
   update()

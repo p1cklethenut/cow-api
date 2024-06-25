@@ -8,7 +8,7 @@ app.get("/", (req, res) => {
   res.sendFile("/cow/index.html", { root: __dirname });
 });
 
-app.get("/script.js", (req, res) => {
+app.gcet("/script.js", (req, res) => {
   res.sendFile(__dirname + "/cow/script.js");
 });
 
@@ -40,36 +40,6 @@ app.get('/cronjob',(req,res) =>{
   res.send("croned")
 })
 
-let lastimeclicked = 0;
-async function clicked(){
-  console.log("clicked")
-  if(timelastclicked != undefined){
-    if(timelastclicked+50 > Date.now()){
-      //console.log(timelastclicked+50 < Date.now())
-      return
-    }
-  }
-  timelastclicked = Date.now()
-  //console.log("registed")
-  const mooaudio = new Audio("/moo.mp3");
-
-  mooaudio.play();
-
-
-  const cowbtn = document.getElementsByClassName("cowbtn")[0]
-  //console.log((width *0.8).toFixed(0)+"px")
-  cowbtn.style.width= (width *0.8).toFixed(0)+"px"
-
-  let secs = 150
-  let options = [1,2,3,5,10]
-  let num = options[Math.floor(Math.random() * options.length)]
-  for (let i = 0; i < num; i++){
-    clickeffect(cowbtn)
-    await sleep(secs/num)
-  }
-  cowbtn.style.width= width+"px"
-  //console.log("set back to "+width+"px")
-}
 
 function saveData(){
   let data = JSON.parse(fs.readFileSync("./data.json"))
@@ -155,7 +125,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("clicked", (data) => {
-    //console.log("clicked: "+data);
+    //console.log("clicked: "+JSON.stringify(data));
     let id = data.id;
     let clicks = data.clicks;
 
