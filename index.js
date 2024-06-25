@@ -8,7 +8,7 @@ app.get("/", (req, res) => {
   res.sendFile("/cow/index.html", { root: __dirname });
 });
 
-app.gcet("/script.js", (req, res) => {
+app.get("/script.js", (req, res) => {
   res.sendFile(__dirname + "/cow/script.js");
 });
 
