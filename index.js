@@ -39,8 +39,10 @@ app.get("/*", (req, res) => {
       break;
     case("/404/style.css"):
       res.sendFile(__dirname + "/404page/style.css");
+      break;
     case("/404/bg.jpg"):
       res.sendFile(__dirname + "/404page/cowbg.jpg");
+      break;
     default:
       res.sendFile(__dirname + "/404page/index.html");
   }  
