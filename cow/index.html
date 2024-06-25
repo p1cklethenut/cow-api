@@ -29,19 +29,21 @@
       crossorigin="anonymous"
     ></script>
     <style>
-      #chatappbutton {
-        background: linear-gradient(to left, #34eb95, #349eeb) padding-box;
-        border-radius: 50em;
-        border: 2px solid transparent;
+      body {         user-select: none;
+    }
+      .cowparticle {
+        position: absolute;
       }
-      #chatappbutton:hover {
-        background:
-          linear-gradient(to left, #34eb95, #349eeb) padding-box,
-          linear-gradient(to right, darkblue, darkorchid) border-box;
+      .cowbtn {
+        user-select: none;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        max-width: 200px;
+
+        transition: width 0.4s ease; /* Duration: 3 seconds with an ease timing function */
       }
-      #githubbutton {
-        border-radius: 50em;
-      }
+
       hr.gradient {
         height: 3px;
         border: none;
@@ -53,6 +55,11 @@
           rgba(6, 84, 170, 1) 51%,
           rgba(0, 255, 113, 1) 100%
         );
+      }
+
+      .cowbtn img {
+        width: 100%;
+        max-width: 200px;
       }
     </style>
   </head>
@@ -108,10 +115,21 @@
             <h1 id="num">Total Cows: </h1>
                         <h2 id="selfnum">Your contribution: </h2>
 
-          <div class="row gx-5 align-items-center">              <!-- Header text content-->
-              <button id="btn" type="button" style="position-absolute top-50 start-50 translate-middle bg-white">
-                  <img height="200px" style="" src="https://czheyuchatapp.onrender.com/cow/cow.png">
-              </button>
+          <div style="height:400px" class="row gx-5 align-items-center">              <!-- Header text content-->
+
+            <div class="text-center text-xxl-start">
+              <div class="fs-3 fw-light text-muted">
+                <button
+                  id="cowbtn"
+                  class="cowbtn border border-0 bg-transparent"
+                  onclick="clicked()"
+                >
+                  <img class="cowimg"
+                    src="/cow.png"
+                  />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </header>

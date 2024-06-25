@@ -1,9 +1,14 @@
 const socket = io();
 const number = document.getElementById("num");
 const self = document.getElementById("selfnum");
-
+let clickbuffer=0;
 console.log(1)
 let selfid;
+let timelastclicked = 0;
+let cowimgs = []
+let width = 200;
+let totalcows = 0;
+let selfcows = 0;
 
 function getId(){
   let id = localStorage.getItem("id")
@@ -25,6 +30,74 @@ function getId(){
   }
 }
 
+
+async function clicked(){
+  console.log("clicked")
+  if(timelastclicked != undefined){
+    if(timelastclicked+50 > Date.now()){
+      //console.log(timelastclicked+50 < Date.now())
+      return
+    }
+  }
+  timelastclicked = Date.now()
+  //console.log("registed")
+  //const mooaudio = new Audio("/moo.mp3");
+
+
+  clickbuffer += 1
+
+  number.innerHTML = "Total Cows: "+(totalcows + clickbuffer);
+  self.innerHTML = "Your contribution: "+(selfcows + clickbuffer);
+  
+  const cowbtn = document.getElementById("cowbtn")
+  //console.log((width *0.8).toFixed(0)+"px")
+  cowbtn.style.width= (width *0.8).toFixed(0)+"px"
+
+  let secs = 150
+  let options = [1,2,3,5,10]
+  let num = options[Math.floor(Math.random() * options.length)]
+  for (let i = 0; i < num; i++){
+    clickeffect(cowbtn)
+    await sleep(secs/num)
+  }
+  cowbtn.style.width= width+"px"
+}
+
+function generatecowimgid(){
+  let id = Math.floor(Math.random() * 10000)
+  while (cowimgs.includes(id)){
+    id = Math.floor(Math.random() * 10000)
+  }
+  return id
+}
+
+async function clickeffect(cowbtn){
+  let cowid = generatecowimgid();
+  let element = `
+  <div id="${await cowid}" class="cowparticle" style="
+        left: ${Math.floor(Math.random()*80)}%;
+        top:${Math.floor(Math.random()*80)}%;
+        width:${Math.floor(Math.random()*10)+5}%;">
+  <img src="/cow.png">
+  </div>`
+
+
+  cowbtn.innerHTML += element
+  for(let i = 0; i < 50; i++){
+    let cowparticle = document.getElementById(cowid)
+    cowparticle.style.opacity = 1-(1/50*i)**2
+    await sleep(1000/50)
+
+  }
+  let cowimg = document.getElementById(cowid)
+  //console.log(cowimg)
+  cowimg.remove()
+}
+
+async function sleep(ms){
+  return new Promise((resolve)=>(setTimeout(()=>{resolve()},ms)))
+}
+
 socket.on("connect", (data) => {
   socket.emit("id", getId());
   
@@ -32,20 +105,30 @@ socket.on("connect", (data) => {
 
 socket.on("total",(data)=>{
 
-  number.innerHTML = "Total Cows: "+data.total;
+  number.innerHTML = "Total Cows: "+(data.total + clickbuffer);
+  totalcows = data.total
 })
 
 socket.on("number", (data) => {
   console.log(data)
-  number.innerHTML = "Total Cows: "+data.total;
-  self.innerHTML = "Your contribution: "+data.self
+  number.innerHTML = "Total Cows: "+(data.total + clickbuffer);
+  self.innerHTML = "Your contribution: "+(data.self + clickbuffer);
+  totalcows = data.total
+  selfcows = data.self
   localStorage.setItem('id',data.id)
   if(selfid != data.id){
     selfid = data.id
-    document.getElementById('btn').onclick = () => {
-      socket.emit("clicked", selfid);
-    }
+    document.getElementById('cowbtn').onclick = clicked
+
   }
 });
   
-
+async function update(){
+  if(clickbuffer>0){
+    socket.emit("clicked",{id:getId(),clicks:clickbuffer})
+    clickbuffer = 0
+  }
+  await sleep(1000)
+  update()
+}
+update()
