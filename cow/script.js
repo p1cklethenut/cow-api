@@ -83,9 +83,9 @@ async function clickeffect(cowbtn){
 
 
   cowbtn.innerHTML += element
-  for(let i = 0; i < 50; i++){
+  for(let i = 0; i < 25; i++){
     let cowparticle = document.getElementById(cowid)
-    cowparticle.style.opacity = 1-(1/50*i)**2
+    cowparticle.style.opacity = 1-(1/25*i)**2
     await sleep(1000/50)
 
   }
