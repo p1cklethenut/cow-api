@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+const { connect } = require("http2");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
@@ -85,6 +86,7 @@ function socketSetup() {
     let socket_client_id = socket.id;
     // Send initial content to the client when connected
     let connection_client_id;
+
     socket.on("disconnect", (reason) => {
       // ...
       //console.log(reason)
@@ -143,6 +145,10 @@ function socketSetup() {
         self: self,
         id: id,
       });
+      let leaderboardpos = getPlacement(id,json.users);
+      io.to(socket_client_id).emit("leaderboard", {
+        lb: leaderboardpos,
+      })
       if (connections[id]) {
         if (!connections[id].includes(socket_client_id)) {
           connections[id].push(socket_client_id);
@@ -176,7 +182,7 @@ function socketSetup() {
 
       let total = json.clicks;
       let self = json.users[id];
-      for (let i = 0; i < connections[id].length; i++) {
+      for (let i = 0; i < connections[i].length; i++) {
         io.to(connections[id][i]).emit("number", {
           total: total,
           self: self,
@@ -188,8 +194,21 @@ function socketSetup() {
   });
 }
 
+//Function to get placement of user by id
+function getPlacement(id,users){
+
+  const obj = users;
+  const sortedinorder = Object.fromEntries( Object.entries(obj).sort((a, b) => b[1] -a[1]) );
+  for(let i=0; i<Object.keys(sortedinorder).length;i++){
+    if(sortedinorder[Object.keys(sortedinorder)[i]]==users[id]){
+      return i+1
+    }
+  }
+}
+
 //Function to update Total cow count globally (setInterval(this))
 function updateTotalGlobal() {
+  clearEmpt()
   if (Object.keys(connections).length == 0) {
     return;
   }
@@ -197,6 +216,24 @@ function updateTotalGlobal() {
   const json = require("./data.json");
   const totalclicks = json.clicks;
   io.emit("total", { total: totalclicks });
+
+  //also
+}
+
+function clearEmpt(){
+  let json = require("./data.json");
+  let newusers= {};
+  for(const id in json.users){
+    //console.log(id)
+    //console.log(json.users[id])
+
+    if(json.users[id]>0||Object.keys(connections).includes(id)){
+      newusers[id] = json.users[id]
+    }
+  }
+  
+  json.users = newusers;
+  fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
 }
 
 //Function to roll a cow drop. Deps: getTotalWeight(), ./rolls.json:

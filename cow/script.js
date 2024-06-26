@@ -10,7 +10,7 @@ let cowimgs = []
 let width = 200;
 let totalcows = 0;
 let selfcows = 0;
-
+let leaderboardpos;
 function getId(){
   let id = localStorage.getItem("id")
   if(!id){
@@ -65,8 +65,11 @@ async function clicked(){
 function updatedisplay(){
 
   number.innerHTML = "Total Cows: "+(totalcows + clickbuffer+clicksendbuffer);
-
-  self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer);
+  if(leaderboardpos){
+    self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer) + `(Leaderboard Position: ${leaderboardpos})`;
+  }else{
+    self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer);
+  }
 }
 
 function generatecowimgid(){
@@ -114,6 +117,11 @@ socket.on("total",(data)=>{
 
   totalcows = data.total
   updatedisplay()
+})
+
+socket.on("leaderboard",(data)=>{
+  let pos = data.lb  
+  leaderboardpos = pos
 })
 
 socket.on("number", (data) => {
