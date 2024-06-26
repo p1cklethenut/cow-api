@@ -72,7 +72,7 @@
   <body class="d-flex flex-column">
     <main class="flex-shrink-0">
       <!-- Navigation-->
-      <nav class="navbar navbar-expand-lg navbar-light bg-white border py-3">
+      <nav class="sticky-top navbar navbar-expand-lg navbar-light bg-white border py-3">
         <div class="container px-2">
           <a class="navbar-brand" href="#"
             ><span
@@ -110,8 +110,7 @@
         <div
           class="gradient-border-mask container p-5"
         >
-            
-           <h1 id="num" class="fw-bold" style="
+           <h1 id="num" class="d-inline-flex fw-bold" style="
                 font-size: 50px;
                 background: -webkit-linear-gradient(
                   right top,
@@ -120,7 +119,11 @@
                 );
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
-              ">Total Cows: 0</h1>
+              "><span class="placeholder-wave">
+            <span class="placeholder" style="width:200px">
+                
+            </span>
+          </span></h1>
           <h2 id="selfnum" class="" style="
                 font-size: 30px;
                 background: -webkit-linear-gradient(
@@ -131,7 +134,11 @@
                 );
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
-              ">Your contribution: 0</h2>
+              "><span class="placeholder-wave">
+            <span class="placeholder" style="width:250px">
+                
+            </span>
+          </span></h2>
           
 
           <div style="height:250px" class="row gx-5 align-items-center">              <!-- Header text content-->
@@ -153,7 +160,18 @@
         </div>
       </header>
       <hr class="m">
-      <footer class="footer fw-light mx-3 my-2">cowtube v0.930</footer>
+      <footer class="d-inline-flex footer fw-light my-1 container-fluid">
+          <p class="container-fluid">cowtube v0.935</p>
+          <p id="uuid" class="text-end container-fluid"><span class="placeholder-wave">
+            <span class="placeholder" style="width:100px">
+                
+            </span>
+          </span>
+          </p>
+          
+          
+          
+      </footer>
     </main>
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="script.js"></script>

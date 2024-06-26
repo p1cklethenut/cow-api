@@ -133,6 +133,9 @@ socket.on("number", (data) => {
   updatedisplay()
   localStorage.setItem('id',data.id)
   if(selfid != data.id){
+    document.getElementById('uuid').innerHTML=`
+    uuid: ${data.id}
+    `
     selfid = data.id
     document.getElementById('cowbtn').onclick = clicked
 
