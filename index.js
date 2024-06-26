@@ -1,6 +1,6 @@
 const express = require("express");
 const fs = require("fs");
-const { connect } = require("http2");
+
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
@@ -182,13 +182,20 @@ function socketSetup() {
 
       let total = json.clicks;
       let self = json.users[id];
-      for (let i = 0; i < connections[i].length; i++) {
+      for (let i = 0; i < connections[id].length; i++) {
         io.to(connections[id][i]).emit("number", {
           total: total,
           self: self,
           id: id,
         });
       }
+
+      for (let i = 0; i < connections[id].length; i++) {
+        io.to(connections[id][i]).emit("leaderboard", {
+          lb: getPlacement(id,json.users),
+        });
+      }
+      
       connection_client_id = id;
     });
   });
@@ -198,12 +205,22 @@ function socketSetup() {
 function getPlacement(id,users){
 
   const obj = users;
-  const sortedinorder = Object.fromEntries( Object.entries(obj).sort((a, b) => b[1] -a[1]) );
-  for(let i=0; i<Object.keys(sortedinorder).length;i++){
-    if(sortedinorder[Object.keys(sortedinorder)[i]]==users[id]){
+  let sortable = [];
+for (const userarray in obj) {
+    sortable.push([userarray, obj[userarray]]);
+}
+
+sortable.sort(function(a, b) {
+    return b[1] - a[1];
+});
+  
+  //console.log(sortable)
+  for(let i=0;i<sortable.length;i++){
+    if(sortable[i][0]==id){
       return i+1
     }
   }
+  return null 
 }
 
 //Function to update Total cow count globally (setInterval(this))
