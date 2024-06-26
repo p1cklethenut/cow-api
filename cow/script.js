@@ -66,7 +66,7 @@ function updatedisplay(){
 
   number.innerHTML = "Total Cows: "+(totalcows + clickbuffer+clicksendbuffer);
   if(leaderboardpos){
-    self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer) + `(Leaderboard Position: ${leaderboardpos})`;
+    self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer) + `\nLeaderboard Position: ${leaderboardpos}`;
   }else{
     self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer);
   }
