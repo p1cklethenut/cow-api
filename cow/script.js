@@ -3,7 +3,7 @@ const number = document.getElementById("num");
 const self = document.getElementById("selfnum");
 let clickbuffer=0;
 let clicksendbuffer = 0;
-console.log(1)
+//console.log(1)
 let selfid;
 let timelastclicked = 0;
 let cowimgs = []
@@ -33,7 +33,7 @@ function getId(){
 
 
 async function clicked(){
-  console.log("clicked")
+  //console.log("clicked")
   if(timelastclicked != undefined){
     if(timelastclicked+50 > Date.now()){
       //console.log(timelastclicked+50 < Date.now())
@@ -66,7 +66,7 @@ function updatedisplay(){
 
   number.innerHTML = "Total Cows: "+(totalcows + clickbuffer+clicksendbuffer);
   if(leaderboardpos){
-    self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer) + `\nLeaderboard Position: ${leaderboardpos}`;
+    self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer) + `<br>Leaderboard Position: ${leaderboardpos}`;
   }else{
     self.innerHTML = "Your contributions: "+(selfcows + clickbuffer+clicksendbuffer);
   }
@@ -126,7 +126,7 @@ socket.on("leaderboard",(data)=>{
 
 socket.on("number", (data) => {
   
-  console.log(data)
+  //console.log(data)
   clicksendbuffer = 0
   totalcows = data.total
   selfcows = data.self

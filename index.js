@@ -72,7 +72,9 @@ function getLb(){
     const obj = require('./data.json').users;
     let sortable = [];
   for (const userarray in obj) {
-      sortable.push({id:userarray, cows:obj[userarray]});
+    let userob = {id:userarray, cows:obj[userarray]}
+    userob["online"] = Object.keys(connections).includes(userarray)
+      sortable.push(userob);
   }
 
   sortable.sort(function(a, b) {
@@ -121,7 +123,7 @@ function socketSetup() {
       console.log(socket_client_id)
       */
       if (!connection_client_id) {
-        console.log("no id");
+        //console.log("no id");
         return;
       }
       if (connections[connection_client_id].includes(socket_client_id)) {
@@ -129,8 +131,7 @@ function socketSetup() {
           connections[connection_client_id].indexOf(socket_client_id),
           1,
         );
-        //console.log(`connections: ${JSON.stringify(connections)}`)
-        console.log(`client ${connection_client_id} disconnected`);
+        //console.log(`client ${connection_client_id} disconnected`);
 
         if (connections[connection_client_id].length == 0) {
           delete connections[connection_client_id];
@@ -181,7 +182,7 @@ function socketSetup() {
         connections[id] = [socket_client_id];
       }
       connection_client_id = id;
-      console.log(`connections: ${JSON.stringify(connections)}`);
+      console.log(`connections: ${JSON.stringify(connections, null, 2)}`);
     });
 
     socket.on("clicked", (data) => {

@@ -30,14 +30,20 @@ function getLb(){
 function format(lb,id){
   let html = ""
   for(let i=0;i<lb.length;i++){
+    let snippet = `<li class="list-group-item`
     if(lb[i].id == id){
 
-      html += `<li class="list-group-item active">uuid: ${lb[i].id} - ${lb[i].cows} cows</li>`
-
-      continue
+      snippet += ` active`
     }
-    html += `<li class="list-group-item">uuid:${lb[i].id} - ${lb[i].cows}cows</li>`
+    snippet += `"> uuid: ${lb[i].id}`
+    //console.log(lb[i].online)
+    if(lb[i].online){
+      snippet +="(online)"
+    }
+    snippet += ` - ${lb[i].cows} cows</li>`
     
+    
+    html+=snippet
   }
   return html
 }
@@ -49,6 +55,30 @@ function getPos(lb,id){
     }
   }
   return "unknown"
+}
+
+function loading(){
+  list.innerHTML= `<li class="list-group-item active"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
+
+    </span>
+  </span> </li>
+  <li class="list-group-item"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
+
+    </span>
+  </span></li>
+  <li class="list-group-item"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
+
+    </span>
+  </span></li>
+  <li class="list-group-item"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
+
+    </span>
+  </span></li>`
+  
 }
 
 async function main(data){
@@ -67,3 +97,5 @@ socket.on("lb",(data)=>{
   main(data)
 
 })
+
+setInterval(getLb,5000)
