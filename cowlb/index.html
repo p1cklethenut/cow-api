@@ -9,7 +9,7 @@
     />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>CowTube</title>
+    <title>Leaderboard</title>
 
     <!-- Bootstrap icons-->
     <link
@@ -32,26 +32,8 @@
       body {         
         user-select: none;
         cursor: url('/cowcur.png'),default !important;
-    }
-      .cowparticle {
-        position: absolute;
-      }
-      .cowbtn {
-        cursor: url('/cowcur.png'),default !important;
-        user-select: none;
-        position: relative;
-        width: 100%;
-        height: 100%;
-        max-width: 200px;
-
-        transition: width 0.4s ease; /* Duration: 3 seconds with an ease timing function */
       }
 
-
-      .cowbtn img {
-        width: 100%;
-        max-width: 200px;
-      }
       .gradient-border-mask {
         position: relative;
         backdrop-filter: blur(10px);
@@ -84,7 +66,7 @@
               color:#b41aff;
                 font-size: 30px;
               "
-              >CowTube</span
+              >CowTube | Leaderboard</span
             ></a
           >
           <button
@@ -116,7 +98,7 @@
         <div
           class="gradient-border-mask container p-5"
         >
-           <h1 id="num" class="d-inline-flex fw-bold" style="
+           <h1 id="placement" class="d-inline-flex fw-bold" style="
                 font-size: 50px;
                 background: -webkit-linear-gradient(
                   right top,
@@ -127,59 +109,63 @@
                 -webkit-text-fill-color: transparent;
               "><span class="placeholder-wave">
             <span class="placeholder" style="width:200px">
-                
+
             </span>
           </span></h1>
-          <h2 id="selfnum" class="" style="
+<h2 id="uuid" class="" style="
                 font-size: 30px;
                 background: -webkit-linear-gradient(
                   right top,
                   #b7b3f5,
                   #b47aff
-                                    
+
                 );
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
               "><span class="placeholder-wave">
             <span class="placeholder" style="width:250px">
-                
+
             </span>
           </span></h2>
-          
+          <div style="" class="row gx-5 align-items-center">              <!-- Header text content-->
 
-          <div style="height:250px" class="row gx-5 align-items-center">              <!-- Header text content-->
+            <ul id="lbl" class="m-0 p-0 list-group list-group-numbered">
+  <li class="list-group-item active"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
 
-            <div class="text-center text-xxl-start">
-              <div class="fs-3 fw-light text-muted">
-                <button
-                  id="cowbtn"
-                  class="cowbtn border border-0 bg-transparent"
-                  onclick="clicked()"
-                >
-                  <img class="cowimg"
-                    src="/cow.png"
-                  />
-                </button>
-              </div>
-            </div>
+    </span>
+  </span> </li>
+  <li class="list-group-item"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
+
+    </span>
+  </span></li>
+  <li class="list-group-item"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
+
+    </span>
+  </span></li>
+  <li class="
+    >A fourth item</li>
+  <li class="list-group-item"><span class="placeholder-wave">
+    <span class="placeholder" style="width:250px">
+
+    </span>
+  </span></li>
+</ul>
           </div>
         </div>
       </header>
       <hr class="m">
       <footer class="d-inline-flex footer fw-light my-1 container-fluid">
           <p class="container-fluid">cowtube v0.935</p>
-          <p id="uuid" class="text-end container-fluid"><span class="placeholder-wave">
-            <span class="placeholder" style="width:100px">
-                
-            </span>
-          </span>
-          </p>
-          
-          
-          
+
+
+
       </footer>
     </main>
-  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  <script src="script.js"></script>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <script src="/leaderboard/script.js"></script>
   </body>
 </html>

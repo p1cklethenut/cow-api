@@ -6,7 +6,7 @@ const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const url = process.env["db"];
 let connections = {}; //to track and update clients
-
+app.use(express.json())
 app.get("/*", (req, res) => {
   switch(req.url){
     case("/"):
@@ -15,6 +15,14 @@ app.get("/*", (req, res) => {
 
     case("/script.js"):
       res.sendFile(__dirname + "/cow/script.js");
+      break;
+    case("/leaderboard"):
+
+      res.sendFile(__dirname + "/cowlb/index.html");
+      break;
+    case("/leaderboard/script.js"):
+
+      res.sendFile(__dirname + "/cowlb/script.js");
       break;
 
     case("/cow.png"):
@@ -61,6 +69,20 @@ app.post("/*", (req, res) => {
 
 
 
+function getLb(){
+    const obj = require('./data.json').users;
+    let sortable = [];
+  for (const userarray in obj) {
+      sortable.push({id:userarray, cows:obj[userarray]});
+  }
+
+  sortable.sort(function(a, b) {
+      return b["cows"] - a["cows"];
+  });
+  console.log(sortable)
+  return sortable
+}
+
 //Function to POST clicks data to a url endpoint:
 function saveData() {
   let data = JSON.parse(fs.readFileSync("./data.json"));
@@ -83,10 +105,13 @@ function saveData() {
 //setup socket.io server
 function socketSetup() {
   io.on("connection", (socket) => {
+    
     let socket_client_id = socket.id;
     // Send initial content to the client when connected
     let connection_client_id;
-
+    socket.on("getlb",()=>{
+      io.to(socket_client_id).emit("lb",getLb())
+      })
     socket.on("disconnect", (reason) => {
       // ...
       //console.log(reason)
