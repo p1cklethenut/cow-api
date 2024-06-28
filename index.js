@@ -67,8 +67,7 @@ app.post("/*", (req, res) => {
   }
 });
 
-
-
+//Function that gets and returns a array of objects, sorted from top to bottom (leaderboard)
 function getLb(){
     const obj = require('./data.json').users;
     let sortable = [];
@@ -79,7 +78,7 @@ function getLb(){
   sortable.sort(function(a, b) {
       return b["cows"] - a["cows"];
   });
-  console.log(sortable)
+  //console.log(sortable)
   return sortable
 }
 
