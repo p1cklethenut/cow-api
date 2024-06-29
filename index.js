@@ -6,82 +6,85 @@ const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const url = process.env["db"];
 let connections = {}; //to track and update clients
-app.use(express.json())
+app.use(express.json());
 app.get("/*", (req, res) => {
-  switch(req.url){
-    case("/"):
+  switch (req.url) {
+    case "/":
       res.sendFile(__dirname + "/cow/index.html");
       break;
 
-    case("/script.js"):
+    case "/script.js":
       res.sendFile(__dirname + "/cow/script.js");
       break;
-    case("/leaderboard"):
-
+    case "/leaderboard":
       res.sendFile(__dirname + "/cowlb/index.html");
       break;
-    case("/leaderboard/script.js"):
-
+    case "/leaderboard/script.js":
       res.sendFile(__dirname + "/cowlb/script.js");
       break;
 
-    case("/cow.png"):
+    case "/cow.png":
       res.sendFile(__dirname + `/cow/cow${Math.floor(Math.random() * 1)}.png`);
       break;
 
-    case("/rollcow"):
+    case "/rollcow":
       let rolls = [];
       for (let i = 0; i < 10; i++) {
         rolls.push(rollcow());
       }
       res.send(rolls);
       break;
-      
-    case("/cowcur.png"):
+
+    case "/cowcur.png":
       res.sendFile(__dirname + "/cowcur.png");
       break;
-      
-    case("/cronjob"):
+
+    case "/cronjob":
       //keeping server alive + saving data to Db
       saveData();
       res.send("croned");
       break;
-    case("/404/style.css"):
+    case "/404/style.css":
       res.sendFile(__dirname + "/404page/style.css");
       break;
-    case("/404/bg.jpg"):
+    case "/404/bg.jpg":
       res.sendFile(__dirname + "/404page/cowbg.jpg");
       break;
     default:
       res.sendFile(__dirname + "/404page/index.html");
-  }  
-})
+  }
+});
 
 app.post("/*", (req, res) => {
-  switch(req.url){
-    case("/cowtubeapi"):
+  switch (req.url) {
+    case "/cowtubeapi":
       ytapi(req, res);
       break;
     default:
-      res.send("404")
+      res.send("404");
   }
 });
 
 //Function that gets and returns a array of objects, sorted from top to bottom (leaderboard)
-function getLb(){
-    const obj = require('./data.json').users;
-    let sortable = [];
+function getLb() {
+  const obj = require("./data.json").users;
+  let sortable = [];
   for (const userarray in obj) {
-    let userob = {id:userarray, cows:obj[userarray]}
-    userob["online"] = Object.keys(connections).includes(userarray)
-      sortable.push(userob);
+    //console.log(obj[userarray])
+    let userob = {
+      id: userarray,
+      cows: obj[userarray].cows,
+      name: obj[userarray].name,
+    };
+    userob["online"] = Object.keys(connections).includes(userarray);
+    sortable.push(userob);
   }
 
-  sortable.sort(function(a, b) {
-      return b["cows"] - a["cows"];
+  sortable.sort(function (a, b) {
+    return b["cows"] - a["cows"];
   });
   //console.log(sortable)
-  return sortable
+  return sortable;
 }
 
 //Function to POST clicks data to a url endpoint:
@@ -106,13 +109,23 @@ function saveData() {
 //setup socket.io server
 function socketSetup() {
   io.on("connection", (socket) => {
-    
     let socket_client_id = socket.id;
     // Send initial content to the client when connected
     let connection_client_id;
-    socket.on("getlb",()=>{
-      io.to(socket_client_id).emit("lb",getLb())
-      })
+    socket.on("changeusername", (data) => {
+      let newuser = data.name;
+      if (newuser) {
+        const json = require("./data.json");
+        if (connection_client_id) {
+          json.users[connection_client_id].name = newuser;
+          fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
+          socket.emit("newusername", { name: newuser });
+        }
+      }
+    });
+    socket.on("getlb", () => {
+      io.to(socket_client_id).emit("lb", getLb());
+    });
     socket.on("disconnect", (reason) => {
       // ...
       //console.log(reason)
@@ -159,21 +172,22 @@ function socketSetup() {
             isdupe = false;
           }
         }
-        json.users[id] = 0;
+        json.users[id] = { name: "cowcontributer", cows: 0 };
         fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
         //console.log("created: "+id)
       }
       let total = json.clicks;
-      let self = json.users[id];
+      let self = json.users[id].cows;
       io.to(socket_client_id).emit("number", {
         total: total,
         self: self,
         id: id,
+        name: json.users[id].name,
       });
-      let leaderboardpos = getPlacement(id,json.users);
+      let leaderboardpos = getPlacement(id, json.users);
       io.to(socket_client_id).emit("leaderboard", {
         lb: leaderboardpos,
-      })
+      });
       if (connections[id]) {
         if (!connections[id].includes(socket_client_id)) {
           connections[id].push(socket_client_id);
@@ -199,14 +213,14 @@ function socketSetup() {
             isdupe = false;
           }
         }
-        json.users[id] = 0;
+        json.users[id] = { name: "cowcontributer", cows: 0 };
       }
       json.clicks += clicks;
-      json.users[id] += clicks;
+      json.users[id].cows += clicks;
       fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
 
       let total = json.clicks;
-      let self = json.users[id];
+      let self = json.users[id].cows;
       for (let i = 0; i < connections[id].length; i++) {
         io.to(connections[id][i]).emit("number", {
           total: total,
@@ -217,40 +231,39 @@ function socketSetup() {
 
       for (let i = 0; i < connections[id].length; i++) {
         io.to(connections[id][i]).emit("leaderboard", {
-          lb: getPlacement(id,json.users),
+          lb: getPlacement(id, json.users),
         });
       }
-      
+
       connection_client_id = id;
     });
   });
 }
 
 //Function to get placement of user by id
-function getPlacement(id,users){
-
+function getPlacement(id, users) {
   const obj = users;
   let sortable = [];
-for (const userarray in obj) {
+  for (const userarray in obj) {
     sortable.push([userarray, obj[userarray]]);
-}
+  }
 
-sortable.sort(function(a, b) {
+  sortable.sort(function (a, b) {
     return b[1] - a[1];
-});
-  
+  });
+
   //console.log(sortable)
-  for(let i=0;i<sortable.length;i++){
-    if(sortable[i][0]==id){
-      return i+1
+  for (let i = 0; i < sortable.length; i++) {
+    if (sortable[i][0] == id) {
+      return i + 1;
     }
   }
-  return null 
+  return null;
 }
 
 //Function to update Total cow count globally (setInterval(this))
 function updateTotalGlobal() {
-  clearEmpt()
+  clearEmpt();
   if (Object.keys(connections).length == 0) {
     return;
   }
@@ -262,18 +275,18 @@ function updateTotalGlobal() {
   //also
 }
 
-function clearEmpt(){
+function clearEmpt() {
   let json = require("./data.json");
-  let newusers= {};
-  for(const id in json.users){
+  let newusers = {};
+  for (const id in json.users) {
     //console.log(id)
     //console.log(json.users[id])
 
-    if(json.users[id]>0||Object.keys(connections).includes(id)){
-      newusers[id] = json.users[id]
+    if (json.users[id].cows > 0 || Object.keys(connections).includes(id)) {
+      newusers[id] = json.users[id];
     }
   }
-  
+
   json.users = newusers;
   fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
 }

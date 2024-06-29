@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en" >
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/x-icon" href="/cowcur.png">
+    <link rel="icon" type="image/x-icon" href="/cowcur.png" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -29,9 +29,9 @@
       crossorigin="anonymous"
     ></script>
     <style>
-      body {         
+      body {
         user-select: none;
-        cursor: url('/cowcur.png'),default !important;
+        cursor: url("/cowcur.png"), default !important;
       }
 
       .gradient-border-mask {
@@ -45,11 +45,11 @@
         inset: 0;
         border-radius: 30px;
         border: 3px solid transparent;
-        background: -webkit-linear-gradient(
-                  right top,
-                  #b7b3f5,
-                  #b47aff) border-box;
-        mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        background: -webkit-linear-gradient(right top, #b7b3f5, #b47aff)
+          border-box;
+        mask:
+          linear-gradient(#fff 0 0) padding-box,
+          linear-gradient(#fff 0 0);
         mask-composite: exclude;
       }
     </style>
@@ -57,15 +57,12 @@
   <body class="d-flex flex-column">
     <main class="flex-shrink-0">
       <!-- Navigation-->
-      <nav class="sticky-top navbar navbar-expand-lg navbar-light bg-white border py-3">
+      <nav
+        class="sticky-top navbar navbar-expand-lg navbar-light bg-white border py-3"
+      >
         <div class="container px-2">
           <a class="navbar-brand" href="#"
-            ><span
-              class="fw-bolder"
-              style="
-              color:#b41aff;
-                font-size: 30px;
-              "
+            ><span class="fw-bolder" style="color: #b41aff; font-size: 30px"
               >CowTube | Leaderboard</span
             ></a
           >
@@ -95,76 +92,71 @@
       </nav>
       <!-- Header-->
       <header class="pt-3 pb-5">
-        <div
-          class="gradient-border-mask container p-5"
-        >
-           <h1 id="placement" class="d-inline-flex fw-bold" style="
-                font-size: 50px;
-                background: -webkit-linear-gradient(
-                  right top,
-                  #b7b3f5,
-                  #b41aff
-                );
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-              "><span class="placeholder-wave">
-            <span class="placeholder" style="width:200px">
-
+        <div class="gradient-border-mask container p-5">
+          <h1
+            id="placement"
+            class="d-inline-flex fw-bold"
+            style="
+              font-size: 50px;
+              background: -webkit-linear-gradient(right top, #b7b3f5, #b41aff);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+          >
+            <span class="placeholder-wave">
+              <span class="placeholder" style="width: 200px"> </span>
             </span>
-          </span></h1>
-<h2 id="uuid" class="" style="
-                font-size: 30px;
-                background: -webkit-linear-gradient(
-                  right top,
-                  #b7b3f5,
-                  #b47aff
-
-                );
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-              "><span class="placeholder-wave">
-            <span class="placeholder" style="width:250px">
-
+          </h1>
+          <h2
+            id="uuid"
+            class=""
+            style="
+              font-size: 30px;
+              background: -webkit-linear-gradient(right top, #b7b3f5, #b47aff);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+          >
+            <span class="placeholder-wave">
+              <span class="placeholder" style="width: 250px"> </span>
             </span>
-          </span></h2>
-          
-          <div style="" class="row gx-5 align-items-center">              <!-- Header text content-->
+          </h2>
+
+          <div style="" class="row gx-5 align-items-center">
+            <!-- Header text content-->
 
             <ul id="lbl" class="m-0 p-0 list-group list-group-numbered">
-  <li class="list-group-item active"><span class="placeholder-wave">
-    <span class="placeholder" style="width:250px">
-
-    </span>
-  </span> </li>
-  <li class="list-group-item"><span class="placeholder-wave">
-    <span class="placeholder" style="width:250px">
-
-    </span>
-  </span></li>
-  <li class="list-group-item"><span class="placeholder-wave">
-    <span class="placeholder" style="width:250px">
-
-    </span>
-  </span></li>
-  <li class="list-group-item"><span class="placeholder-wave">
-    <span class="placeholder" style="width:250px">
-
-    </span>
-  </span></li>
-</ul>
+              <li class="list-group-item active">
+                <span class="placeholder-wave">
+                  <span class="placeholder" style="width: 250px"> </span>
+                </span>
+              </li>
+              <li class="list-group-item">
+                <span class="placeholder-wave">
+                  <span class="placeholder" style="width: 250px"> </span>
+                </span>
+              </li>
+              <li class="list-group-item">
+                <span class="placeholder-wave">
+                  <span class="placeholder" style="width: 250px"> </span>
+                </span>
+              </li>
+              <li class="list-group-item">
+                <span class="placeholder-wave">
+                  <span class="placeholder" style="width: 250px"> </span>
+                </span>
+              </li>
+            </ul>
           </div>
         </div>
       </header>
-      <hr class="m">
+      <hr class="m" />
       <footer class="d-inline-flex footer fw-light my-1 container-fluid">
-          <p class="container-fluid">cowtube v0.95</p>
-
-
-
+        <p class="container-fluid">cowtube v0.95</p>
       </footer>
     </main>
 
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  <script src="/leaderboard/script.js"></script>
+    <script src="/leaderboard/script.js"></script>
   </body>
 </html>
