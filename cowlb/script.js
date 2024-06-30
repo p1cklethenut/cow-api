@@ -40,7 +40,7 @@ function format(lb, id) {
     if (lb[i].online) {
       snippet += "(online)";
     }
-    snippet += ` - ${lb[i].cows} cows</li>`;
+    snippet += `<span style="background:#b47aff" class="position-absolute top-50 end-0 translate-middle-y mx-3 badge rounded-pill">${lb[i].cows} cows</span></li>`;
 
     html += snippet;
   }

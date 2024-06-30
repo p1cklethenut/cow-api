@@ -249,7 +249,7 @@ function getPlacement(id, users) {
   }
 
   sortable.sort(function (a, b) {
-    return b[1] - a[1];
+    return b[1].cows - a[1].cows;
   });
 
   //console.log(sortable)
