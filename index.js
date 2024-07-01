@@ -1,10 +1,10 @@
 const express = require("express");
-const fs = require("fs");
 
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const url = process.env["db"];
+let dataobj = {clicks:0,users:{}};
 let connections = {}; //to track and update clients
 app.use(express.json());
 app.get("/*", (req, res) => {
@@ -67,7 +67,7 @@ app.post("/*", (req, res) => {
 
 //Function that gets and returns a array of objects, sorted from top to bottom (leaderboard)
 function getLb() {
-  const obj = require("./data.json").users;
+  const obj = dataobj.users
   let sortable = [];
   for (const userarray in obj) {
     //console.log(obj[userarray])
@@ -89,7 +89,7 @@ function getLb() {
 
 //Function to POST clicks data to a url endpoint:
 function saveData() {
-  let data = JSON.parse(fs.readFileSync("./data.json"));
+  let data = dataobj
   fetch(url, {
     method: "POST",
     headers: {
@@ -115,10 +115,9 @@ function socketSetup() {
     socket.on("changeusername", (data) => {
       let newuser = data.name;
       if (newuser) {
-        const json = require("./data.json");
         if (connection_client_id) {
-          json.users[connection_client_id].name = newuser;
-          fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
+          dataobj.users[connection_client_id].name = newuser;
+          
           socket.emit("newusername", { name: newuser });
         }
       }
@@ -163,28 +162,26 @@ function socketSetup() {
     socket.on("id", (data) => {
       //console.log("ided:"+data);
       let id = data;
-      let json = require("./data.json");
-      if (!id || json.users[id] === undefined) {
+      if (!id || dataobj.users[id]=== undefined) {
         let isdupe = true;
         while (isdupe) {
           id = Math.floor(10000000 + Math.random() * 90000000).toString();
-          if (!Object.keys(json.users).includes(id)) {
+          if (!Object.keys(dataobj.users).includes(id)) {
             isdupe = false;
           }
         }
-        json.users[id] = { name: "cowcontributer", cows: 0 };
-        fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
+        dataobj.users[id] = { name: "cowcontributer", cows: 0 };
         //console.log("created: "+id)
       }
-      let total = json.clicks;
-      let self = json.users[id].cows;
+      let total = dataobj.clicks;
+      let self = dataobj.users[id].cows;
       io.to(socket_client_id).emit("number", {
         total: total,
         self: self,
         id: id,
-        name: json.users[id].name,
+        name: dataobj.users[id].name,
       });
-      let leaderboardpos = getPlacement(id, json.users);
+      let leaderboardpos = getPlacement(id, dataobj.users);
       io.to(socket_client_id).emit("leaderboard", {
         lb: leaderboardpos,
       });
@@ -204,23 +201,22 @@ function socketSetup() {
       let id = data.id;
       let clicks = data.clicks;
 
-      let json = require("./data.json");
-      if (!Object.keys(json.users).includes(id)) {
+      if (!Object.keys(dataobj.users).includes(id)) {
         let isdupe = true;
         while (isdupe) {
           id = Math.floor(10000000 + Math.random() * 90000000).toString();
-          if (!Object.keys(json.users).includes(id)) {
+          if (!Object.keys(dataobj.users).includes(id)) {
             isdupe = false;
           }
         }
-        json.users[id] = { name: "cowcontributer", cows: 0 };
+          dataobj.users[id] = { name: "cowcontributer", cows: 0 };
       }
-      json.clicks += clicks;
-      json.users[id].cows += clicks;
-      fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
+      dataobj.clicks += clicks;
+      dataobj.users[id].cows += clicks;
 
-      let total = json.clicks;
-      let self = json.users[id].cows;
+
+      let total = dataobj.clicks;
+      let self = dataobj.users[id].cows;
       for (let i = 0; i < connections[id].length; i++) {
         io.to(connections[id][i]).emit("number", {
           total: total,
@@ -231,7 +227,7 @@ function socketSetup() {
 
       for (let i = 0; i < connections[id].length; i++) {
         io.to(connections[id][i]).emit("leaderboard", {
-          lb: getPlacement(id, json.users),
+          lb: getPlacement(id, dataobj.users),
         });
       }
 
@@ -268,30 +264,28 @@ function updateTotalGlobal() {
     return;
   }
 
-  const json = require("./data.json");
-  const totalclicks = json.clicks;
+  const totalclicks = dataobj.clicks;
   io.emit("total", { total: totalclicks });
 
   //also
 }
 
 function clearEmpt() {
-  let json = require("./data.json");
-  let newusers = {};
-  for (const id in json.users) {
-    //console.log(id)
-    //console.log(json.users[id])
+  let data= dataobj.users
+  let tobedeleted = {};
+  for (const id in data) {
 
-    if (json.users[id].cows > 0 || Object.keys(connections).includes(id)) {
-      newusers[id] = json.users[id];
+    if (data[id].cows == 0 && !Object.keys(connections).includes(id)) {
+      tobedeleted[id] = data[id];
     }
   }
+  for (const id in tobedeleted) {
+    delete dataobj.users[id]
+  }
 
-  json.users = newusers;
-  fs.writeFileSync(__dirname + "/data.json", JSON.stringify(json));
 }
 
-//Function to roll a cow drop. Deps: getTotalWeight(), ./rolls.json:
+//Function to roll a cow drop. Deps: getTotalWeight()
 function rollcow() {
   //Function to get weight to randomize cow drops:
   function getTotalWeight() {
@@ -353,7 +347,7 @@ function main() {
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
-      fs.writeFileSync(__dirname + "/data.json", data);
+      dataobj = JSON.parse(data)
       console.log("got data");
       http.listen(process.env.PORT || 3001, () => {
         console.log("Server listening on port " + process.env.PORT || 3001);
