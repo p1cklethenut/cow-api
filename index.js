@@ -50,6 +50,9 @@ app.get("/*", (req, res) => {
     case "/404/bg.jpg":
       res.sendFile(__dirname + "/404page/cowbg.jpg");
       break;
+    case "/getnews":
+      getnews(res)
+      break;
     default:
       res.sendFile(__dirname + "/404page/index.html");
   }
@@ -64,6 +67,19 @@ app.post("/*", (req, res) => {
       res.send("404");
   }
 });
+
+async function getnews(res){
+  var url = 'https://newsapi.org/v2/top-headlines?' +
+    'country=sg&' +
+    'apiKey='+
+    process.env['newsapi'];
+  var req = new Request(url);
+  let response =await fetch(req)
+  let json = await response.json()
+  res.send(json);
+  return
+
+}
 
 //Function that gets and returns a array of objects, sorted from top to bottom (leaderboard)
 function getLb() {
